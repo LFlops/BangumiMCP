@@ -1383,5 +1383,5 @@ def find_voice_actor(character_name: str) -> str:
 
 if __name__ == "__main__":
     print("Starting Bangumi MCP Server...")
-    mcp.run(transport="stdio")
+    mcp.run(transport="sse")
     print("Bangumi MCP Server stopped.")

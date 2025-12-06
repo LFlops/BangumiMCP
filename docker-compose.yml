@@ -1,0 +1,42 @@
+services:
+  # --- 服务 A: Open WebUI ---
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:latest
+    container_name: open-webui
+    restart: always
+    ports:
+      - "3000:8080" # 宿主机 3000 -> 容器 8080
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      # 告诉 Open WebUI 启用 MCP 功能 (部分新版需要)
+      - ENABLE_MCP_SERVER=true
+      # 如果你有 Ollama 在宿主机，加上这个
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - bangumi-mcp
+
+  # --- 服务 B: Bangumi MCP ---
+  bangumi-mcp:
+    image: bangumi-mcp:v1 # 使用你本地构建好的镜像
+    container_name: bangumi-mcp
+    restart: always
+    # 关键：必须以 SSE 模式启动，并监听 0.0.0.0
+    command:
+      - "fastmcp"
+      - "run"
+      - "main.py"
+      - "--transport"
+      - "sse"
+      - "--port"
+      - "8000"
+      - "--host"
+      - "0.0.0.0"
+    environment:
+      # 替换为你申请的 Bangumi Token
+      - BANGUMI_ACCESS_TOKEN=your_token_here
+
+volumes:
+  open-webui-data:

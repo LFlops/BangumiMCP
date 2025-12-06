@@ -34,6 +34,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Stage 2: Runner (生产环境)
 FROM python:3.10-slim-bookworm
 
+COPY --from=builder /bin/uv /usr/local/bin/uv
+
 # 7. SRE 最佳实践：设置 Python 环境变量
 # PYTHONUNBUFFERED=1: 保证日志直接输出到控制台，不被缓存（对 Docker logs 至关重要）
 ENV PYTHONUNBUFFERED=1 \
@@ -51,4 +53,4 @@ COPY --from=builder /app /app
 
 # 10. 启动命令
 # 由于把 .venv/bin 加入了 PATH，这里可以直接运行命令
-CMD ["bangumi-tv"]
+CMD ["uv", "run",  "main.py"]
