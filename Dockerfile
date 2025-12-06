@@ -2,7 +2,7 @@
 FROM python:3.10-slim AS builder
 
 # Install uv
-RUN pip install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 # Set the working directory
 WORKDIR /app
@@ -24,7 +24,7 @@ RUN uv build --out-dir /wheels
 FROM python:3.10-slim
 
 # Install uv (needed to install the wheel)
-RUN pip install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 # Set the working directory
 WORKDIR /app
@@ -41,5 +41,5 @@ RUN uv pip install --system *.whl
 # It's important NOT to hardcode secrets here.
 
 # Define the command to run the application
-# This will execute the 'okx-agent' script installed by the wheel
+# This will execute the bangumi-tv script installed by the wheel
 CMD ["bangumi-tv"]
